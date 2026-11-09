@@ -1,4 +1,9 @@
-"""Checks for forecast alignment, fitted-state persistence and inference inputs."""
+"""
+Student Name: Matilda Alford
+Student FAN: ALFO0043
+File: test_renewable_model.py
+Description: Checks for forecast alignment, fitted-state persistence and inference inputs.
+"""
 import tempfile
 import unittest
 from pathlib import Path

@@ -40,20 +40,31 @@ def main():
     df = pd.read_parquet(TRAINING_PATH).set_index("timestamp").sort_index()
 
     # Train and evaluate demand prediction, then save its parameters.
-    print('========== Next Hour Demand GP-Regression Results =========')
+    print("\n========== Demand Forecasting Model =========")
     demand_model = DemandModel()
     demand_model.train_eval(training_set=df)
 
     # Price-spike Prediction Model
     print('\n========== Price Spike Prediction Model =========')
     price_model = PriceModel()
-    price_model.train_eval(training_set=df)
+    price_model.train_eval(training_set=df, run_hybrid_eval=False)
 
+    print('\n========== Network Stress Prediction Model =========')
     # Compare network-stress classifiers and save the selected model.
     network_stress_model = NetworkStressModel()
     network_stress_model.train_eval(training_set=df)
 
-    RenewableModel().train(training_set=df)
+    print('\n========== Renewable Generation Forecasting Model =========')
+    # Train renewable forecasting model using cleaned data.
+    # Retain historical observations excluded by curtailment trimming.
+    cleaned_path = Path(TRAINING_PATH).with_name("electricity_cleaned.parquet")
+    renewable_df = (
+        pd.read_parquet(cleaned_path)
+        .set_index("timestamp")
+        .sort_index()
+    )
+    renewable_model = RenewableModel()
+    renewable_model.train(training_set=renewable_df)
 
 if __name__ == "__main__":
     main()

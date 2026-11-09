@@ -14,7 +14,7 @@ import pandas as pd
 
 from DataLoader import DataLoader
 from dotenv import load_dotenv
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 # Resolve paths from this file, independently of the launch directory.
@@ -24,7 +24,15 @@ load_dotenv()
 # Pipeline constants
 API_KEY: str | None = os.getenv("OPENELECTRICITY_API_KEY")
 START_DATE: datetime = datetime(2020, 1, 1)
-END_DATE: datetime = datetime(2026, 9, 24)
+# Current date at midnight in fixed Australian Eastern Standard Time
+AEST = timezone(timedelta(hours=10))
+
+END_DATE: datetime = (
+    datetime.now(AEST)
+    .replace(hour=0, minute=0, second=0, microsecond=0)
+    .replace(tzinfo=None)
+)
+
 
 # Directory
 RAW_DATA_DIR: Path = PROJECT_DIR / "data" / "raw"

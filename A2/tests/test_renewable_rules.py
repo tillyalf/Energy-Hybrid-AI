@@ -1,4 +1,10 @@
-"""Boundary, forecast alignment and uncertainty checks for the symbolic layer."""
+"""
+Student Name: Matilda Alford
+Student FAN: ALFO0043
+File: test_renewable_rules.py
+Description: Boundary, forecast alignment and uncertainty checks for the symbolic layer.
+"""
+
 import unittest
 
 from A2.prolog.RenewableRules import RenewableRules

@@ -97,9 +97,21 @@ class RenewableModel:
         )
         with threadpool_limits(limits=2):
             self.model.fit(examples[self.FEATURES], examples["target"])
-        self.trained_through = (examples.index[-1] + pd.Timedelta(hours=1)).isoformat()
+                
+        self.trained_through = (
+            examples.index[-1] + pd.Timedelta(hours=self.HORIZON_HOURS)
+        ).isoformat()
+
         self.save(model_path)
-        print(f"Renewable model trained on {len(examples):,} examples; saved to {model_path or self.DEFAULT_PATH}")
+
+        # Display training summary
+        print("\nRenewable generation forecasting summary:")
+        print("Selected model: Histogram Gradient Boosting Regressor")
+        print(f"Forecast horizon: {self.HORIZON_HOURS} hour")
+        print(f"Training examples: {len(examples):,}")
+        print(f"Input features: {len(self.FEATURES)}")
+        print(f"Training data through: {self.trained_through}")
+        print(f"Model saved to: {model_path or self.DEFAULT_PATH}")
 
     def save(self, model_path=None) -> None:
         """Store the fitted tree state as bytes in NPZ, plus readable metadata.

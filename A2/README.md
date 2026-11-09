@@ -73,18 +73,36 @@ argument. Generate the dataset first, or provide an existing transformed parquet
 The demand model's existing training and plotting behaviour is preserved. Importing
 either entry-point module does not start training or fetch data.
 
+## SWI-Prolog
+
+SWI-Prolog is required for the demand, price spike, network stress, and combined symbolic reasoning components. The renewable subsystem uses miniKanren within Python.
+
+For GitHub Codespaces (Ubuntu/Debian), install SWI-Prolog using:
+
+```bash
+sudo apt update
+sudo apt install swi-prolog -y
+```
+
+Verify installation:
+
+```bash
+swipl --version
+```
+
 ## Inference
 
-Run both subsystems against recent transformed observations fetched once from the API:
+The inference pipeline loads all four trained machine learning models, retrieves recent electricity data from the Open Electricity API, and performs symbolic reasoning to generate individual and combined assessments.
+
+Run from the `A2` directory:
 
 ```bash
 python inference.py
 ```
 
-Live inference uses `OPENELECTRICITY_API_KEY` from the environment or `.env`;
-an existing environment value takes precedence. Model and Prolog paths are resolved
-relative to A2, independently of the launch directory. Train both models before
-running inference.
+Live inference uses `OPENELECTRICITY_API_KEY` from the environment or `.env`, with existing environment variables taking precedence. Model and Prolog paths are resolved relative to A2, independently of the launch directory.
+
+Train all four machine learning models before running inference.
 
 ### Saved model paths
 
