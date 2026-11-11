@@ -136,8 +136,30 @@ def main():
 
     # Fetch and transform the same history for every model.
     now = datetime.now()
-    history = (DataLoader(now, now, api_key).fetch_instance()
-               .set_index("timestamp").sort_index())
+        
+    history = (
+        DataLoader(now, now, api_key).fetch_instance()
+        .set_index("timestamp")
+        .sort_index()
+    )
+
+    # Diagnostic: inspect renewable forecasting inputs
+    print("\n========== Renewable Forecast Diagnostics =========")
+
+    recent = history[["generation_renewable", "demand"]].tail(24)
+
+    print("\nLast 6 hourly observations (MW):")
+    print(recent.tail(6).round(1).to_string())
+
+    print("\nRecent renewable generation:")
+    print(f"Latest: {recent['generation_renewable'].iloc[-1]:,.1f} MW")
+    print(f"24-hour mean: {recent['generation_renewable'].mean():,.1f} MW")
+    print(f"24-hour maximum: {recent['generation_renewable'].max():,.1f} MW")
+
+    print("\nLatest observation timestamp:")
+    print(history.index[-1])
+    print("Sydney local time:", history.index[-1].tz_convert("Australia/Sydney"))
+
     return run_inference(history)
 
 

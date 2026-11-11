@@ -276,7 +276,8 @@ class PriceModel:
     # ------------------------------------------------------------------
 
     def train_eval(self, training_set: pd.DataFrame, model_path: str = DEFAULT_MODEL_PATH,
-                   report_dir: str = DEFAULT_REPORT_DIR) -> dict:
+               report_dir: str = DEFAULT_REPORT_DIR,
+               run_hybrid_eval: bool = True) -> dict:
         """
         Compares Logistic Regression and Random Forest against persistence and
         always-normal baselines, picks an F2 threshold on the validation year,
@@ -381,16 +382,33 @@ class PriceModel:
          .sort_values("importance", ascending=False).head(15)
          .to_csv(report_dir / "feature_importance.csv", index=False))
         table.to_csv(report_dir / "model_comparison_test.csv")
+        
+        # Hybrid evaluation is optional because running Prolog
+        # for every test observation is computationally expensive.
+        summary = None
 
-        # Hybrid evaluation: every test hour through ML -> Prolog
-        summary, decisions = self._hybrid_eval(test, self.model.predict_proba(test[columns])[:, 1])
-        decisions.to_csv(report_dir / "hybrid_test_decisions.csv", index=False)
-        print(f"Hybrid: any-alert recall {summary['hybrid_any_alert_recall']:.3f} "
-              f"(ML alone {summary['ml_only_recall']:.3f}), onset "
-              f"{summary['hybrid_any_alert_recall_onset']:.3f} "
-              f"(ML alone {summary['ml_only_recall_onset']:.3f}), "
-              f"constraint violations {summary['constraint_violations']}")
+        if run_hybrid_eval:
+            summary, decisions = self._hybrid_eval(
+                test,
+                self.model.predict_proba(test[columns])[:, 1]
+            )
 
+            decisions.to_csv(
+                report_dir / "hybrid_test_decisions.csv",
+                index=False
+            )
+
+            print(
+                f"Hybrid: any-alert recall {summary['hybrid_any_alert_recall']:.3f} "
+                f"(ML alone {summary['ml_only_recall']:.3f}), onset "
+                f"{summary['hybrid_any_alert_recall_onset']:.3f} "
+                f"(ML alone {summary['ml_only_recall_onset']:.3f}), "
+                f"constraint violations {summary['constraint_violations']}"
+            )
+        else:
+            print("Skipping full hybrid evaluation during training.")
+
+    
         metrics = {"selected": selected["algorithm"], "validation_candidates": candidates,
                    "validation_baseline": persistence["validation"], "test": results,
                    "hybrid": summary}
