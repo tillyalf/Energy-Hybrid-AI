@@ -24,7 +24,7 @@ The renewable model currently considers uncertainty in the demand forecast, but 
 ## Execution 
 This project is able to be run through the A2 folder, as guided by the readME, these instructions run both A1 and A2 combined, although A1 can additionally be run independently through the A1 folder.
 
-A little overview of the whole pipeline working can be seen in the demonstration video. As briefly touched on in this video, I would love to extend the output to a visual format like a dashboard for readability. 
+A little overview of the whole pipeline will be uploaded below soon. I would love to extend the output to a visual format like a dashboard for readability. 
 
 
 
